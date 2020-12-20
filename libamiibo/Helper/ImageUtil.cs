@@ -22,12 +22,19 @@
  
 using System.Drawing;
 using System.IO;
-using Image = StbSharp.Image;
 
 namespace LibAmiibo.Helper
 {
     //TODO: Add CsOpenGL: csgl.dll
     //Tutorial: http://www.developerfusion.com/article/3930/opengl-and-c-part-1/
+
+    public struct Image
+    {
+        public int Width;
+        public int Height;
+        public int Comp;
+        public byte[] Data;
+    }
 
     public static class ImageUtil
     {
@@ -60,7 +67,7 @@ namespace LibAmiibo.Helper
         private static byte GetLuminance(byte red, byte green, byte blue)
         {
             // Luma (Y’) = 0.299 R’ + 0.587 G’ + 0.114 B’ from wikipedia
-            return (byte)(((0x4CB2*red + 0x9691*green + 0x1D3E*blue) >> 16) & 0xFF);
+            return (byte)(((0x4CB2 * red + 0x9691 * green + 0x1D3E * blue) >> 16) & 0xFF);
         }
 
         private static int PixelFormatBytes(PixelFormat pixelFormat)
@@ -230,26 +237,26 @@ namespace LibAmiibo.Helper
                     EncodeTile(8, 8, 0, 0, source, fs, pixelFormat);
         }
     }
-}
 
-static class Extensions
-{
-    public static void SetPixel(this Image img, int x, int y, Color color)
+    static class Extensions
     {
-        int offset = (y * img.Width + x) * img.Comp;
-        img.Data[offset + 0] = color.R;
-        img.Data[offset + 1] = color.G;
-        img.Data[offset + 2] = color.B;
-        img.Data[offset + 3] = color.A;
-    }
+        public static void SetPixel(this Image img, int x, int y, Color color)
+        {
+            int offset = (y * img.Width + x) * img.Comp;
+            img.Data[offset + 0] = color.R;
+            img.Data[offset + 1] = color.G;
+            img.Data[offset + 2] = color.B;
+            img.Data[offset + 3] = color.A;
+        }
 
-    public static Color GetPixel(this Image img, int x, int y)
-    {
-        int offset = (y * img.Width + x) * img.Comp;
-        var red = img.Data[offset + 0];
-        var green = img.Data[offset + 1];
-        var blue = img.Data[offset + 2];
-        var alpha = img.Data[offset + 3];
-        return Color.FromArgb(alpha, red, green, blue);
+        public static Color GetPixel(this Image img, int x, int y)
+        {
+            int offset = (y * img.Width + x) * img.Comp;
+            var red = img.Data[offset + 0];
+            var green = img.Data[offset + 1];
+            var blue = img.Data[offset + 2];
+            var alpha = img.Data[offset + 3];
+            return Color.FromArgb(alpha, red, green, blue);
+        }
     }
 }

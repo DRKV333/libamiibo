@@ -20,7 +20,6 @@
  * THE SOFTWARE.
  */
 
-using StbSharp;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -125,7 +124,7 @@ namespace LibAmiibo.Helper
 
     public class IDBEWiiUContext : IDBEContext
     {
-        public Image Image;
+        public byte[] Image { get; private set; }
 
         public override string FirstTitle(Localization localization)
         {
@@ -147,16 +146,11 @@ namespace LibAmiibo.Helper
             return true;
         }
 
-        private Image LoadImage(Stream fs)
+        private byte[] LoadImage(Stream fs)
         {
             var data = new byte[fs.Length - fs.Position];
             fs.Read(data, 0, data.Length);
-
-            ImageReader loader = new ImageReader();
-            using (MemoryStream ms = new MemoryStream(data))
-            {
-                return loader.Read(ms, StbImage.STBI_rgb_alpha);
-            }
+            return data;
         }
     }
 }
