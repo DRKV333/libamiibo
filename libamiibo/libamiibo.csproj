@@ -18,6 +18,13 @@
     <EmbeddedResource Include="Images\empty.png" />
   </ItemGroup>
 
+  <!-- Added as a Target, so the Solution Explorer doesn't get littered with files...  -->
+  <Target Name="IncludeImages" BeforeTargets="PrepareForBuild">
+    <ItemGroup>
+      <EmbeddedResource Include="../libamiibo.images/Images/icon_*.png" />
+    </ItemGroup>
+  </Target>
+      
   <ItemGroup>
     <PackageReference Include="Portable.BouncyCastle" Version="1.8.2" />
     <PackageReference Include="StbSharp" Version="0.6.9.34" />

@@ -9,24 +9,10 @@ namespace LibAmiibo.Images
 {
     class ExternalResourceManager
     {
-        private Assembly Assembly { get; set; }
-        private const string IMAGE_BASE = "LibAmiibo.Images.";
+        private Assembly Assembly { get; set; } = typeof(ExternalResourceManager).Assembly;
+        private const string IMAGE_BASE = "LibAmiibo.";
 
         public static readonly ExternalResourceManager Instance = new ExternalResourceManager();
-
-        private ExternalResourceManager()
-        {
-            try
-            {
-                var assemblyPath = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath);
-                var path = Path.Combine(assemblyPath, "libamiibo.images.dll");
-                this.Assembly = Assembly.LoadFrom(path);
-            }
-            catch
-            {
-                // This happens if the image assembly is not found!
-            }
-        }
 
         public Image GetImage(string name)
         {
