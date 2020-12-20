@@ -83,7 +83,7 @@ namespace LibAmiibo.Helper
         private static byte[] GetCachedStreamData(Title title)
         {
             var titleId = title.TitleID.ToString("X16").ToUpper();
-            var cacheFileName = Path.Combine(Settings.Default["TitleCacheDir"], titleId);
+            var cacheFileName = Path.Combine(Settings.TitleCacheDir, titleId);
             if (File.Exists(cacheFileName))
             {
                 try
