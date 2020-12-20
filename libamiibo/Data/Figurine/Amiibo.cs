@@ -21,22 +21,16 @@
  */
 
 using LibAmiibo.Helper;
+using LibAmiibo.Images;
 using System;
 using System.Collections.Generic;
-using LibAmiibo.Images;
-using StbSharp;
-using System.Reflection;
 
 namespace LibAmiibo.Data.Figurine
 {
-    public class Amiibo
+    public sealed class Amiibo : IEquatable<Amiibo>
     {
-        private Image amiiboImage = null;
-        private static string ImagePrefix
-        {
-            get { return "icon_"; }
-        }
         public string StatueId { get; private set; }
+
         public bool IsDataComplete
         {
             get
@@ -49,6 +43,7 @@ namespace LibAmiibo.Data.Figurine
                     && AmiiboSetNameInternal != null;
             }
         }
+
         internal string StatueNameInternal
         {
             get
@@ -56,6 +51,7 @@ namespace LibAmiibo.Data.Figurine
                 return AmiiboName.GetName(AmiiboNo);
             }
         }
+
         public string StatueName
         {
             get
@@ -63,6 +59,7 @@ namespace LibAmiibo.Data.Figurine
                 return StatueNameInternal ?? "Unknown " + AmiiboNo;
             }
         }
+
         public int GameSeriesId
         {
             get
@@ -71,6 +68,7 @@ namespace LibAmiibo.Data.Figurine
                 return int.Parse(StatueId.Substring(0, 3), System.Globalization.NumberStyles.HexNumber) >> 2;
             }
         }
+
         internal GroupName GameSeriesNameInternal
         {
             get
@@ -78,6 +76,7 @@ namespace LibAmiibo.Data.Figurine
                 return GameSeries.GetName(GameSeriesId);
             }
         }
+
         public string GameSeriesName
         {
             get
@@ -85,6 +84,7 @@ namespace LibAmiibo.Data.Figurine
                 return GameSeriesNameInternal?.FullName ?? "Unknown " + GameSeriesId;
             }
         }
+
         public string GameSeriesShortName
         {
             get
@@ -92,6 +92,7 @@ namespace LibAmiibo.Data.Figurine
                 return GameSeriesNameInternal?.ShortName ?? "UNK";
             }
         }
+
         public byte CharacterNumberInGameSeries
         {
             get
@@ -100,6 +101,7 @@ namespace LibAmiibo.Data.Figurine
                 return (byte)(byte.Parse(StatueId.Substring(3, 1), System.Globalization.NumberStyles.HexNumber) & 0x3F);
             }
         }
+
         public int CharacterId
         {
             get
@@ -107,6 +109,7 @@ namespace LibAmiibo.Data.Figurine
                 return int.Parse(StatueId.Substring(0, 4), System.Globalization.NumberStyles.HexNumber);
             }
         }
+
         internal string CharacterNameInternal
         {
             get
@@ -114,6 +117,7 @@ namespace LibAmiibo.Data.Figurine
                 return Character.GetName(CharacterId);
             }
         }
+
         public string CharacterName
         {
             get
@@ -121,6 +125,7 @@ namespace LibAmiibo.Data.Figurine
                 return CharacterNameInternal ?? "Unknown " + CharacterId;
             }
         }
+
         public byte CharacterVariant
         {
             get
@@ -128,6 +133,7 @@ namespace LibAmiibo.Data.Figurine
                 return byte.Parse(StatueId.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
             }
         }
+
         public long SubCharacterId
         {
             get
@@ -135,6 +141,7 @@ namespace LibAmiibo.Data.Figurine
                 return long.Parse(StatueId.Substring(0, 6), System.Globalization.NumberStyles.HexNumber);
             }
         }
+
         internal string SubCharacterNameInternal
         {
             get
@@ -143,6 +150,7 @@ namespace LibAmiibo.Data.Figurine
                 return SubCharacter.GetName(SubCharacterId);
             }
         }
+
         public string SubCharacterName
         {
             get
@@ -150,6 +158,7 @@ namespace LibAmiibo.Data.Figurine
                 return SubCharacterNameInternal ?? "Unknown " + SubCharacterId;
             }
         }
+
         public byte ToyTypeId
         {
             get
@@ -157,6 +166,7 @@ namespace LibAmiibo.Data.Figurine
                 return byte.Parse(StatueId.Substring(6, 2), System.Globalization.NumberStyles.HexNumber);
             }
         }
+
         internal string ToyTypeNameInternal
         {
             get
@@ -164,6 +174,7 @@ namespace LibAmiibo.Data.Figurine
                 return ToyType.GetName(ToyTypeId);
             }
         }
+
         public string ToyTypeName
         {
             get
@@ -171,6 +182,7 @@ namespace LibAmiibo.Data.Figurine
                 return ToyTypeNameInternal ?? "Unknown " + ToyTypeId;
             }
         }
+
         public int AmiiboNo
         {
             get
@@ -178,6 +190,7 @@ namespace LibAmiibo.Data.Figurine
                 return int.Parse(StatueId.Substring(8, 4), System.Globalization.NumberStyles.HexNumber);
             }
         }
+
         public string RetailName
         {
             get
@@ -204,6 +217,7 @@ namespace LibAmiibo.Data.Figurine
                 return retailName;
             }
         }
+
         public byte AmiiboSetId
         {
             get
@@ -211,6 +225,7 @@ namespace LibAmiibo.Data.Figurine
                 return byte.Parse(StatueId.Substring(12, 2), System.Globalization.NumberStyles.HexNumber);
             }
         }
+
         public GroupName AmiiboSetNameInternal
         {
             get
@@ -218,6 +233,7 @@ namespace LibAmiibo.Data.Figurine
                 return AmiiboSet.GetName(AmiiboSetId);
             }
         }
+
         public string AmiiboSetName
         {
             get
@@ -225,6 +241,7 @@ namespace LibAmiibo.Data.Figurine
                 return AmiiboSetNameInternal?.FullName ?? "Unknown " + AmiiboSetId;
             }
         }
+
         public string AmiiboSetShortName
         {
             get
@@ -232,64 +249,8 @@ namespace LibAmiibo.Data.Figurine
                 return AmiiboSetNameInternal?.ShortName ?? "UNK";
             }
         }
-        private Image Empty
-        {
-            get
-            {
-                var resFilestream = Assembly.GetExecutingAssembly().GetManifestResourceStream("LibAmiibo.Images.empty.png");
-                byte[] empty = new byte[resFilestream.Length];
-                resFilestream.Read(empty, 0, empty.Length);
-                return StbImage.LoadFromMemory(empty, StbImage.STBI_rgb_alpha);
-            }
-        }
-        public Image AmiiboImage
-        {
-            get
-            {
-                if (amiiboImage != null)
-                    return amiiboImage;
 
-                if (AmiiboNo == 0xFFFF || StatueNameInternal == null)
-                {
-                    return Empty;
-                }
-
-                try
-                {
-                    var correctImage = ExternalResourceManager.Instance.GetImage(ImagePrefix + StatueId.ToLower() + ".png");
-                    if (correctImage != null)
-                    {
-                        amiiboImage = correctImage;
-                        return amiiboImage;
-                    }
-
-                    foreach (string fieldName in ExternalResourceManager.Instance.GetNames())
-                    {
-                        if (!fieldName.StartsWith(ImagePrefix))
-                            continue;
-
-                        Amiibo icon = Amiibo.FromStatueId(fieldName.Substring(ImagePrefix.Length, 16));
-                        if (icon.AmiiboNo == AmiiboNo)
-                        {
-                            amiiboImage = ExternalResourceManager.Instance.GetImage(fieldName);
-                            break;
-                        }
-                        if (amiiboImage == null && icon.CharacterId == CharacterId)
-                        {
-                            amiiboImage = ExternalResourceManager.Instance.GetImage(fieldName);
-                        }
-                    }
-                }
-                catch
-                {
-                }
-
-                if (amiiboImage == null)
-                    amiiboImage = Empty;
-
-                return amiiboImage;
-            }
-        }
+        public string AmiiboImageResource => ImageManager.Instance.GetImageResourceName(this);
 
         private Amiibo(IList<byte> internalTag)
         {
@@ -328,5 +289,11 @@ namespace LibAmiibo.Data.Figurine
         {
             return this.RetailName;
         }
+
+        public bool Equals(Amiibo other) => other.StatueId == StatueId;
+
+        public override bool Equals(object obj) => obj is Amiibo amiibo && Equals(amiibo);
+
+        public override int GetHashCode() => StatueId.GetHashCode();
     }
 }
